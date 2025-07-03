@@ -11,12 +11,6 @@ import {
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
 
-const midLinks = [
-  { title: "catalog", path: "/catalog" },
-  { title: "about", path: "/about" },
-  { title: "contact", path: "/contact" },
-];
-
 // const rightLinks = [
 //   { title: "login", path: "/login" },
 //   { title: "register", path: "/register" },
@@ -71,10 +65,28 @@ export default function Navbar() {
         </Typography>
 
         {/* Middle and right links container */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {/* Middle links */}
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1 }}
+        >
+          {/* Our Wines link centered */}
+          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+            <List sx={{ display: "flex" }}>
+              <ListItem
+                component={NavLink}
+                to="/catalog"
+                key="/catalog"
+                sx={navLinkStyles}
+              >
+                OUR WINES
+              </ListItem>
+            </List>
+          </Box>
+          {/* About and Contact links right-aligned */}
           <List sx={{ display: "flex" }}>
-            {midLinks.map(({ title, path }) => (
+            {[
+              { title: "about", path: "/about" },
+              { title: "contact", path: "/contact" },
+            ].map(({ title, path }) => (
               <ListItem
                 component={NavLink}
                 to={path}
@@ -85,22 +97,6 @@ export default function Navbar() {
               </ListItem>
             ))}
           </List>
-
-          {/* Right links */}
-          {/*
-          <List sx={{ display: "flex" }}>
-            {rightLinks.map(({ title, path }) => (
-              <ListItem
-                component={NavLink}
-                to={path}
-                key={path}
-                sx={navLinkStyles}
-              >
-                {title.toUpperCase()}
-              </ListItem>
-            ))}
-          </List>
-          */}
 
           {/* Shopping cart pushed far right by margin-left: auto on Box */}
           <IconButton size="large" sx={{ color: "inherit" }}>
