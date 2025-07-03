@@ -17,10 +17,10 @@ const midLinks = [
   { title: "contact", path: "/contact" },
 ];
 
-const rightLinks = [
-  { title: "login", path: "/login" },
-  { title: "register", path: "/register" },
-];
+// const rightLinks = [
+//   { title: "login", path: "/login" },
+//   { title: "register", path: "/register" },
+// ];
 
 export default function Navbar() {
   const navLinkStyles = {
@@ -87,6 +87,7 @@ export default function Navbar() {
           </List>
 
           {/* Right links */}
+          {/*
           <List sx={{ display: "flex" }}>
             {rightLinks.map(({ title, path }) => (
               <ListItem
@@ -99,6 +100,7 @@ export default function Navbar() {
               </ListItem>
             ))}
           </List>
+          */}
 
           {/* Shopping cart pushed far right by margin-left: auto on Box */}
           <IconButton size="large" sx={{ color: "inherit" }}>
