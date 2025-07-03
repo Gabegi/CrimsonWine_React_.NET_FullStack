@@ -77,7 +77,7 @@ export default function Navbar() {
                 key="/catalog"
                 sx={navLinkStyles}
               >
-                OUR WINES
+                Our special wine selection
               </ListItem>
             </List>
           </Box>
