@@ -33,6 +33,7 @@ export default function HomePage() {
             fontWeight: 400,
             letterSpacing: "0.03em",
             margin: 0,
+            color: "#fff",
           }}
         >
           Welcome to Crimson Wines, where passion blends into wine
