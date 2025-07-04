@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using API.Data;
 using API.Entities;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
@@ -9,23 +9,30 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class BasketController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly AppDbContext _dbContext;
+        private readonly ILogger<BasketController> _logger;
 
-        public BasketController(DataContext context)
+        public BasketController(AppDbContext dbContext, ILogger<BasketController> logger)
         {
-            _context = context;
+            _dbContext = dbContext;
+            _logger = logger;
         }
 
         // GET: /api/basket/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Basket>> GetBasket(string id)
         {
-            var basket = await _context.Baskets
+            var basket = await _dbContext.Baskets
                 .Include(b => b.Items)
                 .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(b => b.BasketId == id);
 
-            if (basket == null) return NotFound("Basket not found");
+            if (basket == null)
+            {
+                _logger.LogWarning("Basket not found: {BasketId}", id);
+                return NotFound("Basket not found");
+            }
+
             return Ok(basket);
         }
 
@@ -33,7 +40,7 @@ namespace API.Controllers
         [HttpPost]
         public async Task<ActionResult<Basket>> CreateBasket([FromBody] string basketId)
         {
-            if (await _context.Baskets.AnyAsync(b => b.BasketId == basketId))
+            if (await _dbContext.Baskets.AnyAsync(b => b.BasketId == basketId))
                 return BadRequest("Basket already exists");
 
             var basket = new Basket
@@ -42,59 +49,66 @@ namespace API.Controllers
                 Items = new List<BasketItem>()
             };
 
-            _context.Baskets.Add(basket);
-            await _context.SaveChangesAsync();
+            _dbContext.Baskets.Add(basket);
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Created new basket: {BasketId}", basketId);
 
             return CreatedAtAction(nameof(GetBasket), new { id = basket.BasketId }, basket);
         }
 
         // POST: /api/basket/items
         [HttpPost("items")]
-        public async Task<ActionResult> AddItemToBasket([FromBody] AddBasketItemDto dto)
+        public async Task<ActionResult> AddItemToBasket([FromBody] BasketItem item)
         {
-            var basket = await _context.Baskets
+            var basket = await _dbContext.Baskets
                 .Include(b => b.Items)
-                .FirstOrDefaultAsync(b => b.BasketId == dto.BasketId);
+                .FirstOrDefaultAsync(b => b.BasketId == item.Basket.BasketId);
 
             if (basket == null) return NotFound("Basket not found");
 
-            var product = await _context.Products.FindAsync(dto.ProductId);
+            var product = await _dbContext.Products.FindAsync(item.ProductId);
             if (product == null) return NotFound("Product not found");
 
-            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == dto.ProductId);
+            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == item.ProductId);
             if (existingItem != null)
             {
-                existingItem.Quantity += dto.Quantity;
+                existingItem.Quantity += item.Quantity;
             }
             else
             {
                 basket.Items.Add(new BasketItem
                 {
-                    ProductId = dto.ProductId,
-                    Quantity = dto.Quantity,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
                     Product = product
                 });
             }
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Added product {ProductId} x{Qty} to basket {BasketId}", item.ProductId, item.Quantity, basket.BasketId);
+
             return Ok(basket);
         }
 
         // PUT: /api/basket/items
         [HttpPut("items")]
-        public async Task<ActionResult> UpdateItemQuantity([FromBody] UpdateBasketItemDto dto)
+        public async Task<ActionResult> UpdateItemQuantity([FromBody] BasketItem item)
         {
-            var basket = await _context.Baskets
+            var basket = await _dbContext.Baskets
                 .Include(b => b.Items)
-                .FirstOrDefaultAsync(b => b.BasketId == dto.BasketId);
+                .FirstOrDefaultAsync(b => b.BasketId == item.Basket.BasketId);
 
             if (basket == null) return NotFound("Basket not found");
 
-            var item = basket.Items.FirstOrDefault(i => i.ProductId == dto.ProductId);
-            if (item == null) return NotFound("Item not found in basket");
+            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == item.ProductId);
+            if (existingItem == null) return NotFound("Item not found");
 
-            item.Quantity = dto.Quantity;
-            await _context.SaveChangesAsync();
+            existingItem.Quantity = item.Quantity;
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Updated item quantity for product {ProductId} to {Qty} in basket {BasketId}", item.ProductId, item.Quantity, basket.BasketId);
 
             return Ok(basket);
         }
@@ -103,11 +117,13 @@ namespace API.Controllers
         [HttpDelete("items/{id}")]
         public async Task<ActionResult> RemoveItem(int id)
         {
-            var item = await _context.BasketItems.FindAsync(id);
+            var item = await _dbContext.BasketItems.FindAsync(id);
             if (item == null) return NotFound("Item not found");
 
-            _context.BasketItems.Remove(item);
-            await _context.SaveChangesAsync();
+            _dbContext.BasketItems.Remove(item);
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Removed basket item {ItemId}", id);
 
             return NoContent();
         }
@@ -116,14 +132,16 @@ namespace API.Controllers
         [HttpPost("clear")]
         public async Task<ActionResult> ClearBasket([FromBody] string basketId)
         {
-            var basket = await _context.Baskets
+            var basket = await _dbContext.Baskets
                 .Include(b => b.Items)
                 .FirstOrDefaultAsync(b => b.BasketId == basketId);
 
             if (basket == null) return NotFound("Basket not found");
 
             basket.Items.Clear();
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
+
+            _logger.LogInformation("Cleared basket {BasketId}", basketId);
 
             return Ok();
         }
@@ -132,7 +150,7 @@ namespace API.Controllers
         [HttpPost("checkout")]
         public ActionResult Checkout()
         {
-            // Placeholder — you can add integration with payment and order systems here
+            _logger.LogInformation("Checkout process triggered (not implemented)");
             return Ok("Checkout process not yet implemented");
         }
     }
