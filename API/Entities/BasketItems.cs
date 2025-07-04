@@ -2,5 +2,6 @@
 {
     public class BasketItems
     {
+        public int Id { get; set; }
     }
 }
