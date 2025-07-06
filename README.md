@@ -1,6 +1,6 @@
 # React app
 
-- .NET
+- .NET core 
 - EF Core
 - REST APIs
 - React
