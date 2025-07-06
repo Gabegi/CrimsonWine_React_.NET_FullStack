@@ -11,6 +11,6 @@
         public required Product Product {get;set;}
 
         public int BasketId { get; set; }
-        public Basket Basket { get; set; }
+        public required Basket Basket { get; set; }
     }
 }

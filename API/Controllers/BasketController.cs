@@ -81,7 +81,9 @@ namespace API.Controllers
                 {
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    Product = product
+                    Product = product,
+                    Basket = basket
+
                 });
             }
 
