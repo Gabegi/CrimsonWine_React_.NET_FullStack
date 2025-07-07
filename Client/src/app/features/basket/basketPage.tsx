@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import type { Basket } from "../../models/basket";
 import { getBasket } from "./basketAPI";
 import BasketItem from "./basketItem";
@@ -22,15 +22,15 @@ export default function BasketPage() {
     return <Typography variant="h3">Your basket is empty</Typography>;
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={8}>
+    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+      <Box sx={{ flex: 2, minWidth: "300px" }}>
         {basket.items.map((item) => (
           <BasketItem item={item} key={item.productId} />
         ))}
-      </Grid>
-      <Grid item xs={12} md={4}>
+      </Box>
+      <Box sx={{ flex: 1, minWidth: "250px" }}>
         <OrderSummary />
-      </Grid>
-    </Grid>
+      </Box>
+    </Box>
   );
 }
