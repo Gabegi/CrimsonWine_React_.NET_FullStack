@@ -126,7 +126,7 @@ namespace API.Controllers
         // ---------------------------
         // Private helper methods
         // ---------------------------
-
+        
         private async Task<Basket?> RetrieveBasket()
         {
             var basketId = Request.Cookies["basketId"];
