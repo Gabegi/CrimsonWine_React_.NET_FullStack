@@ -21,7 +21,7 @@ export default function BasketPage() {
 
   return (
     <Grid container spacing={2}>
-      <Grid xs={12} md={8}>
+      <Grid item xs={12} md={8}>
         {basket.items.map((item) => (
           <BasketItem item={item} key={item.productId} />
         ))}
