@@ -1,6 +1,5 @@
 // BasketItem.tsx (in same folder as BasketPage)
 import { Card, CardContent, Typography } from "@mui/material";
-import type { BasketItem as BasketItemType } from "../../models/basket";
 
 export default function BasketItem({ item }: { item: BasketItemType }) {
   return (

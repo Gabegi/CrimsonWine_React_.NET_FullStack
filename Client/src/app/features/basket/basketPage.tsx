@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Grid, Typography } from "@mui/material";
 import type { Basket } from "../../models/basket";
 import { getBasket } from "./basketAPI";
+import BasketItem from "./basketItem";
+import OrderSummary from "./orderSummary";
 
 export default function BasketPage() {
   const [basket, setBasket] = useState<Basket | null>(null);
