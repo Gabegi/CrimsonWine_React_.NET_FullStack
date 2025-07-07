@@ -18,53 +18,27 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        // GET: /api/basket/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Basket>> GetBasket(string id)
+        // GET: /api/basket
+        [HttpGet]
+        public async Task<ActionResult<Basket>> GetBasket()
         {
-            var basket = await _dbContext.Baskets
-                .Include(b => b.Items)
-                .ThenInclude(i => i.Product)
-                .FirstOrDefaultAsync(b => b.BasketId == id);
+            var basket = await RetrieveBasket();
 
             if (basket == null)
             {
-                _logger.LogWarning("Basket not found: {BasketId}", id);
-                return NotFound("Basket not found");
+                basket = CreateBasket();
+                await _dbContext.SaveChangesAsync();
+                _logger.LogInformation("Created new basket automatically: {BasketId}", basket.BasketId);
             }
 
             return Ok(basket);
-        }
-
-        // POST: /api/basket
-        [HttpPost]
-        public async Task<ActionResult<Basket>> CreateBasket([FromBody] string basketId)
-        {
-            if (await _dbContext.Baskets.AnyAsync(b => b.BasketId == basketId))
-                return BadRequest("Basket already exists");
-
-            var basket = new Basket
-            {
-                BasketId = basketId,
-                Items = new List<BasketItem>()
-            };
-
-            _dbContext.Baskets.Add(basket);
-            await _dbContext.SaveChangesAsync();
-
-            _logger.LogInformation("Created new basket: {BasketId}", basketId);
-
-            return CreatedAtAction(nameof(GetBasket), new { id = basket.BasketId }, basket);
         }
 
         // POST: /api/basket/items
         [HttpPost("items")]
         public async Task<ActionResult> AddItemToBasket([FromBody] BasketItem item)
         {
-            var basket = await _dbContext.Baskets
-                .Include(b => b.Items)
-                .FirstOrDefaultAsync(b => b.BasketId == item.Basket.BasketId);
-
+            var basket = await RetrieveBasket();
             if (basket == null) return NotFound("Basket not found");
 
             var product = await _dbContext.Products.FindAsync(item.ProductId);
@@ -83,7 +57,6 @@ namespace API.Controllers
                     Quantity = item.Quantity,
                     Product = product,
                     Basket = basket
-
                 });
             }
 
@@ -98,10 +71,7 @@ namespace API.Controllers
         [HttpPut("items")]
         public async Task<ActionResult> UpdateItemQuantity([FromBody] BasketItem item)
         {
-            var basket = await _dbContext.Baskets
-                .Include(b => b.Items)
-                .FirstOrDefaultAsync(b => b.BasketId == item.Basket.BasketId);
-
+            var basket = await RetrieveBasket();
             if (basket == null) return NotFound("Basket not found");
 
             var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == item.ProductId);
@@ -132,18 +102,15 @@ namespace API.Controllers
 
         // POST: /api/basket/clear
         [HttpPost("clear")]
-        public async Task<ActionResult> ClearBasket([FromBody] string basketId)
+        public async Task<ActionResult> ClearBasket()
         {
-            var basket = await _dbContext.Baskets
-                .Include(b => b.Items)
-                .FirstOrDefaultAsync(b => b.BasketId == basketId);
-
+            var basket = await RetrieveBasket();
             if (basket == null) return NotFound("Basket not found");
 
             basket.Items.Clear();
             await _dbContext.SaveChangesAsync();
 
-            _logger.LogInformation("Cleared basket {BasketId}", basketId);
+            _logger.LogInformation("Cleared basket {BasketId}", basket.BasketId);
 
             return Ok();
         }
@@ -154,6 +121,43 @@ namespace API.Controllers
         {
             _logger.LogInformation("Checkout process triggered (not implemented)");
             return Ok("Checkout process not yet implemented");
+        }
+
+        // ---------------------------
+        // Private helper methods
+        // ---------------------------
+
+        private async Task<Basket?> RetrieveBasket()
+        {
+            var basketId = Request.Cookies["basketId"];
+            if (string.IsNullOrEmpty(basketId)) return null;
+
+            return await _dbContext.Baskets
+                .Include(b => b.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(b => b.BasketId == basketId);
+        }
+
+        private Basket CreateBasket()
+        {
+            var basketId = Guid.NewGuid().ToString();
+            var basket = new Basket
+            {
+                BasketId = basketId,
+                Items = new List<BasketItem>()
+            };
+
+            var cookieOptions = new CookieOptions
+            {
+                IsEssential = true,
+                Expires = DateTime.UtcNow.AddDays(30)
+            };
+
+            Response.Cookies.Append("basketId", basketId, cookieOptions);
+
+            _dbContext.Baskets.Add(basket);
+
+            return basket;
         }
     }
 }
