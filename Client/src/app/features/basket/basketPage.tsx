@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import type { Basket } from "../../models/basket";
 import { getBasket } from "./basketAPI";
 
@@ -26,9 +26,9 @@ export default function BasketPage() {
           <BasketItem item={item} key={item.productId} />
         ))}
       </Grid>
-      <Grid2 xs={12} md={4}>
+      <Grid xs={12} md={4}>
         <OrderSummary />
-      </Grid2>
+      </Grid>
     </Grid>
   );
 }
