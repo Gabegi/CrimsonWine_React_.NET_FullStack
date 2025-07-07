@@ -28,7 +28,7 @@ export default function BasketPage() {
           <BasketItem item={item} key={item.productId} />
         ))}
       </Grid>
-      <Grid xs={12} md={4}>
+      <Grid item xs={12} md={4}>
         <OrderSummary />
       </Grid>
     </Grid>
