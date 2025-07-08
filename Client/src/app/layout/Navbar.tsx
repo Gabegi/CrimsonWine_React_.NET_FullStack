@@ -99,7 +99,12 @@ export default function Navbar() {
           </List>
 
           {/* Shopping cart pushed far right by margin-left: auto on Box */}
-          <IconButton size="large" sx={{ color: "inherit" }}>
+          <IconButton
+            component={Link}
+            to="/basket"
+            size="large"
+            sx={{ color: "inherit" }}
+          >
             <Badge badgeContent={4} color="secondary">
               <ShoppingCart />
             </Badge>
