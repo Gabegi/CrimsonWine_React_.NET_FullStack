@@ -10,6 +10,7 @@ import {
   Box,
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // const rightLinks = [
 //   { title: "login", path: "/login" },
