@@ -38,6 +38,8 @@ if (app.Environment.IsDevelopment())
 
 // Use CORS
 app.UseCors("AllowFrontend");
+app.UseCors("CorsPolicy");
+
 
 
 // Middleware
