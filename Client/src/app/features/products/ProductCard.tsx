@@ -9,9 +9,11 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import type { Product } from "../../models/product";
+import { addItemToBasket } from "./basketAPI";
 
 interface Props {
   product: Product;
+  onBasketUpdate?: () => void; // Optional callback to refresh basket elsewhere
 }
 export default function ProductCard({ product }: Props) {
   return (
