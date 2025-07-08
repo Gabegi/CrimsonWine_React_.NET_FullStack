@@ -9,6 +9,11 @@ const defaultOptions: RequestInit = {
   credentials: "include", // Send/receive cookies
 };
 
+type AddItemParams = {
+  productId: number;
+  quantity: number;
+};
+
 // --- API Methods ---
 
 // GET /api/basket
@@ -23,18 +28,22 @@ export async function getBasket(): Promise<Basket> {
 }
 
 // POST /api/basket/items
-export async function addItemToBasket(item: {
-  productId: number;
-  quantity: number;
-}): Promise<Basket> {
-  const res = await fetch(`${BASE_URL}/items`, {
-    ...defaultOptions,
+export async function addItemToBasket(productId: number, quantity: number = 1) {
+  const response = await fetch("/api/basket/items", {
     method: "POST",
-    body: JSON.stringify(item),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ productId, quantity }),
   });
 
-  if (!res.ok) throw new Error("Failed to add item to basket");
-  return await res.json();
+  if (!response.ok) {
+    const errorText = await response.text(); // <-- important: response might not have JSON
+    throw new Error(`HTTP ${response.status}: ${errorText}`);
+  }
+
+  const basket: Basket = await response.json();
+  return basket;
 }
 
 // PUT /api/basket/items

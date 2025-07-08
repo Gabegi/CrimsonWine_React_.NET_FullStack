@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using API.Controllers.DTOs;
+using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,68 +37,102 @@ namespace API.Controllers
 
         // POST: /api/basket/items
         [HttpPost("items")]
-        public async Task<ActionResult> AddItemToBasket([FromBody] BasketItem item)
+        public async Task<ActionResult<Basket>> AddItemToBasket([FromBody] AddItemDto addItemDto)
         {
+            // Get or create basket automatically
             var basket = await RetrieveBasket();
-            if (basket == null) return NotFound("Basket not found");
+            if (basket == null)
+            {
+                basket = CreateBasket();
+                await _dbContext.SaveChangesAsync();
+                _logger.LogInformation("Created new basket for item addition: {BasketId}", basket.BasketId);
+            }
 
-            var product = await _dbContext.Products.FindAsync(item.ProductId);
+            // Validate product exists
+            var product = await _dbContext.Products.FindAsync(addItemDto.ProductId);
             if (product == null) return NotFound("Product not found");
 
-            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == item.ProductId);
+            // Check if item already exists in basket
+            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == addItemDto.ProductId);
             if (existingItem != null)
             {
-                existingItem.Quantity += item.Quantity;
+                // Update quantity if item exists
+                existingItem.Quantity += addItemDto.Quantity;
+                _logger.LogInformation("Updated existing item quantity for product {ProductId} to {Qty} in basket {BasketId}",
+                    addItemDto.ProductId, existingItem.Quantity, basket.BasketId);
             }
             else
             {
-                basket.Items.Add(new BasketItem
+                // Add new item to basket
+                var newItem = new BasketItem
                 {
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
+                    ProductId = addItemDto.ProductId,
+                    Quantity = addItemDto.Quantity,
                     Product = product,
                     Basket = basket
-                });
+                };
+                basket.Items.Add(newItem);
+                _logger.LogInformation("Added new product {ProductId} x{Qty} to basket {BasketId}",
+                    addItemDto.ProductId, addItemDto.Quantity, basket.BasketId);
             }
 
-            await _dbContext.SaveChangesAsync();
+            var result = await _dbContext.SaveChangesAsync() > 0;
 
-            _logger.LogInformation("Added product {ProductId} x{Qty} to basket {BasketId}", item.ProductId, item.Quantity, basket.BasketId);
+            if (result)
+            {
+                // Return the updated basket with all items
+                var updatedBasket = await RetrieveBasket();
+                return Ok(updatedBasket);
+            }
 
-            return Ok(basket);
+            return BadRequest("Problem adding item to basket");
         }
 
         // PUT: /api/basket/items
         [HttpPut("items")]
-        public async Task<ActionResult> UpdateItemQuantity([FromBody] BasketItem item)
+        public async Task<ActionResult<Basket>> UpdateItemQuantity([FromBody] UpdateItemDto updateItemDto)
         {
             var basket = await RetrieveBasket();
             if (basket == null) return NotFound("Basket not found");
 
-            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == item.ProductId);
+            var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == updateItemDto.ProductId);
             if (existingItem == null) return NotFound("Item not found");
 
-            existingItem.Quantity = item.Quantity;
-            await _dbContext.SaveChangesAsync();
+            existingItem.Quantity = updateItemDto.Quantity;
 
-            _logger.LogInformation("Updated item quantity for product {ProductId} to {Qty} in basket {BasketId}", item.ProductId, item.Quantity, basket.BasketId);
+            var result = await _dbContext.SaveChangesAsync() > 0;
 
-            return Ok(basket);
+            if (result)
+            {
+                _logger.LogInformation("Updated item quantity for product {ProductId} to {Qty} in basket {BasketId}",
+                    updateItemDto.ProductId, updateItemDto.Quantity, basket.BasketId);
+                return Ok(basket);
+            }
+
+            return BadRequest("Problem updating basket");
         }
 
-        // DELETE: /api/basket/items/{id}
-        [HttpDelete("items/{id}")]
-        public async Task<ActionResult> RemoveItem(int id)
+        // DELETE: /api/basket/items/{productId}
+        [HttpDelete("items/{productId}")]
+        public async Task<ActionResult> RemoveItem(int productId)
         {
-            var item = await _dbContext.BasketItems.FindAsync(id);
+            var basket = await RetrieveBasket();
+            if (basket == null) return NotFound("Basket not found");
+
+            var item = basket.Items.FirstOrDefault(i => i.ProductId == productId);
             if (item == null) return NotFound("Item not found");
 
-            _dbContext.BasketItems.Remove(item);
-            await _dbContext.SaveChangesAsync();
+            basket.Items.Remove(item);
 
-            _logger.LogInformation("Removed basket item {ItemId}", id);
+            var result = await _dbContext.SaveChangesAsync() > 0;
 
-            return NoContent();
+            if (result)
+            {
+                _logger.LogInformation("Removed product {ProductId} from basket {BasketId}", productId, basket.BasketId);
+                return Ok();
+            }
+
+            return BadRequest("Problem removing item from basket");
         }
 
         // POST: /api/basket/clear
@@ -126,7 +161,7 @@ namespace API.Controllers
         // ---------------------------
         // Private helper methods
         // ---------------------------
-        
+
         private async Task<Basket?> RetrieveBasket()
         {
             var basketId = Request.Cookies["basketId"];
@@ -150,7 +185,9 @@ namespace API.Controllers
             var cookieOptions = new CookieOptions
             {
                 IsEssential = true,
-                Expires = DateTime.UtcNow.AddDays(30)
+                Expires = DateTime.UtcNow.AddDays(30),
+                SameSite = SameSiteMode.Lax,
+                Secure = false // Set to true in production with HTTPS
             };
 
             Response.Cookies.Append("basketId", basketId, cookieOptions);
