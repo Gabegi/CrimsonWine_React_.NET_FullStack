@@ -34,7 +34,7 @@ export async function addItemToBasket({
   productId: number;
   quantity: number;
 }) {
-  const response = await fetch("http://localhost:7020/api/basket/items", {
+  const response = await fetch(`${BASE_URL}/items`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
