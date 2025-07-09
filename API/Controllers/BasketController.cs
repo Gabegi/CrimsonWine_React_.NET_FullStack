@@ -39,6 +39,7 @@ namespace API.Controllers
         [HttpPost("items")]
         public async Task<ActionResult<Basket>> AddItemToBasket([FromBody] AddItemDto addItemDto)
         {
+            _logger.LogInformation("AddItemToBasket called with ProductId: {ProductId}, Quantity: {Quantity}", addItemDto.ProductId, addItemDto.Quantity);
             // Get or create basket automatically
             var basket = await RetrieveBasket();
             if (basket == null)
@@ -80,9 +81,8 @@ namespace API.Controllers
 
             if (result)
             {
-                // Return the updated basket with all items
-                var updatedBasket = await RetrieveBasket();
-                return Ok(updatedBasket);
+                // Return the current basket instance (in-memory, up-to-date)
+                return Ok(basket);
             }
 
             return BadRequest("Problem adding item to basket");

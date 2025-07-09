@@ -1,4 +1,6 @@
-﻿namespace API.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace API.Entities
 {
     public class BasketItem
     {
@@ -11,6 +13,7 @@
         public required Product Product {get;set;}
 
         public int BasketId { get; set; }
+        [JsonIgnore]
         public required Basket Basket { get; set; }
     }
 }
