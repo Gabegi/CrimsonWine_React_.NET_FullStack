@@ -9,11 +9,22 @@ export default function BasketPage() {
 
   // Refresh basket on mount
   useEffect(() => {
+    console.log("BasketPage: Refreshing basket on mount");
     refreshBasket();
   }, [refreshBasket]);
 
-  if (!basket || basket.items.length === 0)
+  console.log("BasketPage: Current basket state:", basket);
+
+  if (!basket || basket.items.length === 0) {
+    console.log("BasketPage: Basket is empty or null");
     return <Typography variant="h3">Your basket is empty</Typography>;
+  }
+
+  console.log(
+    "BasketPage: Rendering basket with",
+    basket.items.length,
+    "items"
+  );
 
   return (
     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>

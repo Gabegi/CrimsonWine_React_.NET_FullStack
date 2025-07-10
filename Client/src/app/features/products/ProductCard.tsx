@@ -23,13 +23,16 @@ export default function ProductCard({ product, onBasketUpdate }: Props) {
   const { refreshBasket } = useBasket();
 
   const handleAddToCart = async () => {
+    console.log("Adding item to cart:", product.id);
     setIsAdding(true);
     try {
       await addItemToBasket({
         productId: product.id,
         quantity: 1,
       });
+      console.log("Item added successfully, refreshing basket...");
       await refreshBasket(); // Refresh global basket after adding
+      console.log("Basket refreshed");
       onBasketUpdate?.(); // Optional callback
     } catch (error) {
       console.error("Failed to add item to basket:", error);
