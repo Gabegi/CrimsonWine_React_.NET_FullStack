@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import type { Product } from "../../models/product";
 import { addItemToBasket } from "../basket/basketAPI";
+import { useBasket } from "../basket/BasketContext";
 
 interface Props {
   product: Product;
@@ -19,6 +20,7 @@ interface Props {
 
 export default function ProductCard({ product, onBasketUpdate }: Props) {
   const [isAdding, setIsAdding] = useState(false);
+  const { refreshBasket } = useBasket();
 
   const handleAddToCart = async () => {
     setIsAdding(true);
@@ -27,11 +29,10 @@ export default function ProductCard({ product, onBasketUpdate }: Props) {
         productId: product.id,
         quantity: 1,
       });
-      onBasketUpdate?.(); // Notify parent component to refresh basket
-      // You could also show a success message here
+      await refreshBasket(); // Refresh global basket after adding
+      onBasketUpdate?.(); // Optional callback
     } catch (error) {
       console.error("Failed to add item to basket:", error);
-      // You could show an error message here
     } finally {
       setIsAdding(false);
     }

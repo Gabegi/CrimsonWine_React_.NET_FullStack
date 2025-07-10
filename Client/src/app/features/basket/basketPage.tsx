@@ -1,22 +1,13 @@
-import { useEffect, useState } from "react";
 import { Box, Typography } from "@mui/material";
-import type { Basket } from "../../models/basket";
-import { getBasket } from "./basketAPI";
 import BasketItem from "./basketItem";
 import OrderSummary from "./orderSummary";
+import { useBasket } from "./BasketContext";
 
 export default function BasketPage() {
-  const [basket, setBasket] = useState<Basket | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { basket } = useBasket();
 
-  useEffect(() => {
-    getBasket()
-      .then(setBasket)
-      .catch((error) => console.error("Failed to load basket:", error))
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) return <Typography>Loading basket...</Typography>;
+  // Optionally, refresh basket on mount
+  // useEffect(() => { refreshBasket(); }, [refreshBasket]);
 
   if (!basket || basket.items.length === 0)
     return <Typography variant="h3">Your basket is empty</Typography>;

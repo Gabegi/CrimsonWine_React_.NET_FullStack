@@ -14,3 +14,9 @@ export type Item = {
   type: string;
   quantity: number;
 };
+
+export type BasketContextType = {
+  basket: Basket | null;
+  setBasket: (basket: Basket | null) => void;
+  refreshBasket: () => Promise<void>;
+};
