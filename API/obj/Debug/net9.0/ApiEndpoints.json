@@ -9,7 +9,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "API.Entities.Basket",
+        "Type": "API.Controllers.DTOs.BasketDto",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -55,7 +55,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "API.Entities.Basket",
+        "Type": "API.Controllers.DTOs.BasketDto",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -81,7 +81,7 @@
     ],
     "ReturnTypes": [
       {
-        "Type": "API.Entities.Basket",
+        "Type": "API.Controllers.DTOs.BasketDto",
         "MediaTypes": [
           "text/plain",
           "application/json",

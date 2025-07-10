@@ -17,11 +17,13 @@ const defaultOptions: RequestInit = {
 // --- API Methods ---
 
 // GET /api/basket
-export async function getBasket(): Promise<Basket> {
+export async function getBasket(): Promise<Basket | null> {
   const res = await fetch(BASE_URL, {
     ...defaultOptions,
     method: "GET",
   });
+
+  if (res.status === 204) return null; // No basket exists
 
   if (!res.ok) throw new Error("Failed to fetch basket");
   return await res.json();
