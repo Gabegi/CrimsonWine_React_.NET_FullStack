@@ -166,7 +166,7 @@ namespace API.Controllers
 
         private async Task<Basket?> RetrieveBasket()
         {
-            var basketId = Request.Cookies["basketId"];
+            var basketId = Request.Headers["X-Basket-Id"].FirstOrDefault();
             if (string.IsNullOrEmpty(basketId)) return null;
 
             return await _dbContext.Baskets
@@ -184,20 +184,7 @@ namespace API.Controllers
                 Items = new List<BasketItem>()
             };
 
-            var cookieOptions = new CookieOptions
-            {
-                IsEssential = true,
-                Expires = DateTime.UtcNow.AddDays(30),
-                SameSite = SameSiteMode.Lax, // Try Lax instead of None
-                Secure = false, // Set to false for localhost development
-                HttpOnly = false, // Allow JavaScript access
-                Path = "/" // Ensure cookie is available for all paths
-            };
-
-            _logger.LogInformation("Setting cookie: basketId={BasketId}, SameSite={SameSite}, Secure={Secure}", 
-                basketId, cookieOptions.SameSite, cookieOptions.Secure);
-
-            Response.Cookies.Append("basketId", basketId, cookieOptions);
+            _logger.LogInformation("Created new basket: {BasketId}", basketId);
 
             _dbContext.Baskets.Add(basket);
 
