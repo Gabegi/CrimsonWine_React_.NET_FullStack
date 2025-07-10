@@ -181,9 +181,14 @@ namespace API.Controllers
             {
                 IsEssential = true,
                 Expires = DateTime.UtcNow.AddDays(30),
-                SameSite = SameSiteMode.Lax,
-                Secure = false // Set to true in production with HTTPS
+                SameSite = SameSiteMode.Lax, // Try Lax instead of None
+                Secure = false, // Set to false for localhost development
+                HttpOnly = false, // Allow JavaScript access
+                Path = "/" // Ensure cookie is available for all paths
             };
+
+            _logger.LogInformation("Setting cookie: basketId={BasketId}, SameSite={SameSite}, Secure={Secure}", 
+                basketId, cookieOptions.SameSite, cookieOptions.Secure);
 
             Response.Cookies.Append("basketId", basketId, cookieOptions);
 

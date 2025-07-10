@@ -18,15 +18,34 @@ const defaultOptions: RequestInit = {
 
 // GET /api/basket
 export async function getBasket(): Promise<Basket | null> {
+  console.log("getBasket: Making request to", BASE_URL);
+  console.log("getBasket: Cookies being sent:", document.cookie);
+
   const res = await fetch(BASE_URL, {
     ...defaultOptions,
     method: "GET",
   });
 
-  if (res.status === 204) return null; // No basket exists
+  console.log("getBasket: Response status:", res.status);
+  console.log(
+    "getBasket: Response headers:",
+    Object.fromEntries(res.headers.entries())
+  );
+  console.log("getBasket: Set-Cookie header:", res.headers.get("set-cookie"));
 
-  if (!res.ok) throw new Error("Failed to fetch basket");
-  return await res.json();
+  if (res.status === 204) {
+    console.log("getBasket: No basket exists (204)");
+    return null;
+  }
+
+  if (!res.ok) {
+    console.error("getBasket: Request failed with status", res.status);
+    throw new Error("Failed to fetch basket");
+  }
+
+  const data = await res.json();
+  console.log("getBasket: Received basket data:", data);
+  return data;
 }
 
 export async function addItemToBasket({
@@ -36,6 +55,9 @@ export async function addItemToBasket({
   productId: number;
   quantity: number;
 }) {
+  console.log("addItemToBasket: Making request to", `${BASE_URL}/items`);
+  console.log("addItemToBasket: Cookies being sent:", document.cookie);
+
   const response = await fetch(`${BASE_URL}/items`, {
     method: "POST",
     headers: {
@@ -45,6 +67,16 @@ export async function addItemToBasket({
     body: JSON.stringify({ productId, quantity }),
   });
 
+  console.log("addItemToBasket: Response status:", response.status);
+  console.log(
+    "addItemToBasket: Response headers:",
+    Object.fromEntries(response.headers.entries())
+  );
+  console.log(
+    "addItemToBasket: Set-Cookie header:",
+    response.headers.get("set-cookie")
+  );
+
   if (!response.ok) {
     const errorText = await response.text(); // This handles empty body
     console.error("Backend error response:", errorText);
@@ -52,7 +84,9 @@ export async function addItemToBasket({
   }
 
   try {
-    return await response.json();
+    const data = await response.json();
+    console.log("addItemToBasket: Received response data:", data);
+    return data;
   } catch {
     throw new Error("Invalid JSON response from server");
   }
