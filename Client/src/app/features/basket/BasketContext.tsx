@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import type { Basket, BasketContextType } from "../../models/basket";
 import { getBasket } from "./basketAPI";
 
@@ -17,6 +23,11 @@ export const BasketProvider: React.FC<{ children: React.ReactNode }> = ({
       setBasket(null);
     }
   }, []);
+
+  // Load basket on mount
+  useEffect(() => {
+    refreshBasket();
+  }, [refreshBasket]);
 
   return (
     <BasketContext.Provider value={{ basket, setBasket, refreshBasket }}>

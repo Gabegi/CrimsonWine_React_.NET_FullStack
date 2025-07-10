@@ -2,12 +2,15 @@ import { Box, Typography } from "@mui/material";
 import BasketItem from "./basketItem";
 import OrderSummary from "./orderSummary";
 import { useBasket } from "./BasketContext";
+import { useEffect } from "react";
 
 export default function BasketPage() {
-  const { basket } = useBasket();
+  const { basket, refreshBasket } = useBasket();
 
-  // Optionally, refresh basket on mount
-  // useEffect(() => { refreshBasket(); }, [refreshBasket]);
+  // Refresh basket on mount
+  useEffect(() => {
+    refreshBasket();
+  }, [refreshBasket]);
 
   if (!basket || basket.items.length === 0)
     return <Typography variant="h3">Your basket is empty</Typography>;
