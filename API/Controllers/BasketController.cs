@@ -35,13 +35,20 @@ namespace API.Controllers
         [HttpPost("items")]
         public async Task<ActionResult<BasketDto>> AddItemToBasket([FromBody] AddItemDto addItemDto)
         {
+            _logger.LogInformation("AddItemToBasket called with ProductId: {ProductId}, Quantity: {Quantity}", addItemDto.ProductId, addItemDto.Quantity);
+            
             // Get or create basket automatically
             var basket = await RetrieveBasket();
             if (basket == null)
             {
+                _logger.LogInformation("No existing basket found, creating new basket");
                 basket = CreateBasket();
                 await _dbContext.SaveChangesAsync();
                 _logger.LogInformation("Created new basket for item addition: {BasketId}", basket.BasketId);
+            }
+            else
+            {
+                _logger.LogInformation("Found existing basket: {BasketId}", basket.BasketId);
             }
 
             // Validate product exists
