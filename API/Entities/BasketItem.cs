@@ -14,6 +14,6 @@ namespace API.Entities
 
         public int BasketId { get; set; }
         [JsonIgnore]
-        public required Basket Basket { get; set; }
+        public Basket Basket { get; set; }
     }
 }

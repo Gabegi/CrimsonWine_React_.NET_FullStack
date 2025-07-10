@@ -3,6 +3,7 @@ using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace API.Controllers
 {
@@ -21,25 +22,19 @@ namespace API.Controllers
 
         // GET: /api/basket
         [HttpGet]
-        public async Task<ActionResult<Basket>> GetBasket()
+        public async Task<ActionResult<BasketDto>> GetBasket()
         {
             var basket = await RetrieveBasket();
 
-            if (basket == null)
-            {
-                basket = CreateBasket();
-                await _dbContext.SaveChangesAsync();
-                _logger.LogInformation("Created new basket automatically: {BasketId}", basket.BasketId);
-            }
+            if (basket == null) return NoContent();
 
-            return Ok(basket);
+            return Ok(basket.ToDto());
         }
 
         // POST: /api/basket/items
         [HttpPost("items")]
-        public async Task<ActionResult<Basket>> AddItemToBasket([FromBody] AddItemDto addItemDto)
+        public async Task<ActionResult<BasketDto>> AddItemToBasket([FromBody] AddItemDto addItemDto)
         {
-            _logger.LogInformation("AddItemToBasket called with ProductId: {ProductId}, Quantity: {Quantity}", addItemDto.ProductId, addItemDto.Quantity);
             // Get or create basket automatically
             var basket = await RetrieveBasket();
             if (basket == null)
@@ -51,7 +46,7 @@ namespace API.Controllers
 
             // Validate product exists
             var product = await _dbContext.Products.FindAsync(addItemDto.ProductId);
-            if (product == null) return NotFound("Product not found");
+            if (product == null) return NotFound(new { error = "Product not found" });
 
             // Check if item already exists in basket
             var existingItem = basket.Items.FirstOrDefault(i => i.ProductId == addItemDto.ProductId);
@@ -81,16 +76,16 @@ namespace API.Controllers
 
             if (result)
             {
-                // Return the current basket instance (in-memory, up-to-date)
-                return Ok(basket);
+                // Return the current basket instance as a DTO
+                return CreatedAtAction(nameof(GetBasket), basket.ToDto());
             }
 
-            return BadRequest("Problem adding item to basket");
+            return BadRequest(new { error = "Problem adding item to basket" });
         }
 
         // PUT: /api/basket/items
         [HttpPut("items")]
-        public async Task<ActionResult<Basket>> UpdateItemQuantity([FromBody] UpdateItemDto updateItemDto)
+        public async Task<ActionResult<BasketDto>> UpdateItemQuantity([FromBody] UpdateItemDto updateItemDto)
         {
             var basket = await RetrieveBasket();
             if (basket == null) return NotFound("Basket not found");
@@ -106,7 +101,7 @@ namespace API.Controllers
             {
                 _logger.LogInformation("Updated item quantity for product {ProductId} to {Qty} in basket {BasketId}",
                     updateItemDto.ProductId, updateItemDto.Quantity, basket.BasketId);
-                return Ok(basket);
+                return Ok(basket.ToDto());
             }
 
             return BadRequest("Problem updating basket");

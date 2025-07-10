@@ -29,11 +29,7 @@ builder.Services.AddCors(options =>
                   .AllowCredentials(); 
         });
 });
-//builder.Services.AddControllers()
-//    .AddJsonOptions(opts =>
-//    {
-//        opts.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-//    });
+
 
 
 var app = builder.Build();
@@ -45,9 +41,6 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-// Use CORS
-app.UseCors("AllowFrontend");
 
 // Middleware
 app.UseHttpsRedirection();
