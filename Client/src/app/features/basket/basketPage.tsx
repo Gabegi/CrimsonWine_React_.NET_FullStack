@@ -1,4 +1,13 @@
-import { Box, Typography } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Divider,
+  Paper,
+  Card,
+  CardContent,
+  Stack,
+} from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import BasketItem from "./basketItem";
 import OrderSummary from "./orderSummary";
 import { useBasket } from "./BasketContext";
@@ -9,32 +18,69 @@ export default function BasketPage() {
 
   // Refresh basket on mount
   useEffect(() => {
-    console.log("BasketPage: Refreshing basket on mount");
     refreshBasket();
   }, [refreshBasket]);
 
-  console.log("BasketPage: Current basket state:", basket);
-
   if (!basket || basket.items.length === 0) {
-    console.log("BasketPage: Basket is empty or null");
-    return <Typography variant="h3">Your basket is empty</Typography>;
+    return (
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="60vh"
+      >
+        <ShoppingCartIcon sx={{ fontSize: 80, color: "grey.400", mb: 2 }} />
+        <Typography variant="h4" color="text.secondary" gutterBottom>
+          Your basket is empty
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Looks like you haven't added anything yet.
+        </Typography>
+      </Box>
+    );
   }
 
-  console.log(
-    "BasketPage: Rendering basket with",
-    basket.items.length,
-    "items"
-  );
-
   return (
-    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-      <Box sx={{ flex: 2, minWidth: "300px" }}>
-        {basket.items.map((item) => (
-          <BasketItem item={item} key={item.productId} />
-        ))}
+    <Box
+      sx={{
+        display: "flex",
+        gap: 3,
+        flexWrap: { xs: "wrap", md: "nowrap" },
+        mt: 4,
+      }}
+    >
+      {/* Basket Items Section */}
+      <Box sx={{ flex: 2, minWidth: "320px" }}>
+        <Paper elevation={3} sx={{ p: 3 }}>
+          <Typography variant="h5" fontWeight={600} gutterBottom>
+            Your Basket
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <Stack spacing={2}>
+            {basket.items.map((item) => (
+              <Card
+                key={item.productId}
+                variant="outlined"
+                sx={{ display: "flex", alignItems: "center", p: 1 }}
+              >
+                <CardContent sx={{ flex: 1, minWidth: 0 }}>
+                  <BasketItem item={item} />
+                </CardContent>
+              </Card>
+            ))}
+          </Stack>
+        </Paper>
       </Box>
-      <Box sx={{ flex: 1, minWidth: "250px" }}>
-        <OrderSummary />
+      {/* Order Summary Section */}
+      <Box sx={{ flex: 1, minWidth: "260px" }}>
+        <Paper elevation={4} sx={{ p: 3, position: { md: "sticky" }, top: 32 }}>
+          <Typography variant="h6" fontWeight={600} gutterBottom>
+            Order Summary
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+          <OrderSummary />
+        </Paper>
       </Box>
     </Box>
   );
