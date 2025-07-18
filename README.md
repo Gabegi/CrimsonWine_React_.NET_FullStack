@@ -7,4 +7,4 @@
 - Vite
 - MUI
 - React
-- Redux, RTK Query
+
