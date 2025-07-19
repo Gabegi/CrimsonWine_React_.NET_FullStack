@@ -1,8 +1,30 @@
 // BasketItem.tsx (in same folder as BasketPage)
-import { Card, CardContent, Typography, Box, Avatar } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Avatar,
+  IconButton,
+} from "@mui/material";
 import type { Item } from "../../models/basket";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { removeItemFromBasket } from "./basketAPI";
+import { useBasket } from "./BasketContext";
 
 export default function BasketItem({ item }: { item: Item }) {
+  const { refreshBasket } = useBasket();
+
+  const handleRemove = async () => {
+    try {
+      await removeItemFromBasket(item.productId);
+      await refreshBasket();
+    } catch (error) {
+      // Optionally handle error (e.g., show a toast)
+      console.error("Failed to remove item:", error);
+    }
+  };
+
   return (
     <Card sx={{ mb: 2, boxShadow: 0, border: "none", background: "none" }}>
       <CardContent sx={{ display: "flex", alignItems: "center", gap: 2, p: 1 }}>
@@ -21,6 +43,13 @@ export default function BasketItem({ item }: { item: Item }) {
             Price: ${item.price}
           </Typography>
         </Box>
+        <IconButton
+          aria-label="Remove item"
+          onClick={handleRemove}
+          color="error"
+        >
+          <DeleteIcon />
+        </IconButton>
       </CardContent>
     </Card>
   );
