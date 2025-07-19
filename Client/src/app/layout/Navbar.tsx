@@ -1,7 +1,6 @@
 import { ShoppingCart } from "@mui/icons-material";
 import {
   AppBar,
-  Badge,
   IconButton,
   List,
   ListItem,
@@ -106,9 +105,7 @@ export default function Navbar() {
             size="large"
             sx={{ color: "inherit" }}
           >
-            <Badge badgeContent={4} color="secondary">
-              <ShoppingCart />
-            </Badge>
+            <ShoppingCart />
           </IconButton>
         </Box>
       </Toolbar>
