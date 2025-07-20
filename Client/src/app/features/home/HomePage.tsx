@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Button, Container } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function HomePage() {
@@ -29,7 +29,7 @@ export default function HomePage() {
         }}
       />
 
-      <Container maxWidth={false} sx={{ py: 8, px: { xs: 2, md: 4 } }}>
+      <Box sx={{ py: 8, px: 0, width: "100%" }}>
         <Box
           sx={{
             display: "flex",
@@ -147,7 +147,7 @@ export default function HomePage() {
             </Button>
           </Box>
         </Box>
-      </Container>
+      </Box>
     </Box>
   );
 }
