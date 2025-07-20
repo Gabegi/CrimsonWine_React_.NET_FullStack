@@ -7,13 +7,6 @@ const getBasketId = () => localStorage.getItem("basketId");
 const setBasketId = (basketId: string) =>
   localStorage.setItem("basketId", basketId);
 
-const defaultOptions: RequestInit = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-  credentials: "include", // Send/receive cookies
-};
-
 // type AddItemParams = {
 //   productId: number;
 //   quantity: number;
@@ -124,43 +117,124 @@ export async function updateItemQuantity(item: {
   productId: number;
   quantity: number;
 }): Promise<Basket> {
+  console.log("updateItemQuantity: Making request to", `${BASE_URL}/items`);
+  const basketId = getBasketId();
+  console.log("updateItemQuantity: Basket ID from localStorage:", basketId);
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (basketId) {
+    headers["X-Basket-Id"] = basketId;
+  }
+
   const res = await fetch(`${BASE_URL}/items`, {
-    ...defaultOptions,
     method: "PUT",
+    headers,
+    credentials: "include",
     body: JSON.stringify(item),
   });
 
-  if (!res.ok) throw new Error("Failed to update item quantity");
+  console.log("updateItemQuantity: Response status:", res.status);
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Backend error response:", errorText);
+    throw new Error("Failed to update item quantity");
+  }
+
   return await res.json();
 }
 
-// DELETE /api/basket/items/:id
-export async function removeItemFromBasket(itemId: number): Promise<void> {
-  const res = await fetch(`${BASE_URL}/items/${itemId}`, {
-    ...defaultOptions,
+// DELETE /api/basket/items/:productId
+export async function removeItemFromBasket(productId: number): Promise<void> {
+  console.log(
+    "removeItemFromBasket: Making request to",
+    `${BASE_URL}/items/${productId}`
+  );
+  const basketId = getBasketId();
+  console.log("removeItemFromBasket: Basket ID from localStorage:", basketId);
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (basketId) {
+    headers["X-Basket-Id"] = basketId;
+  }
+
+  const res = await fetch(`${BASE_URL}/items/${productId}`, {
     method: "DELETE",
+    headers,
+    credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Failed to remove item");
+  console.log("removeItemFromBasket: Response status:", res.status);
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Backend error response:", errorText);
+    throw new Error("Failed to remove item");
+  }
 }
 
 // POST /api/basket/clear
 export async function clearBasket(): Promise<void> {
+  console.log("clearBasket: Making request to", `${BASE_URL}/clear`);
+  const basketId = getBasketId();
+  console.log("clearBasket: Basket ID from localStorage:", basketId);
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (basketId) {
+    headers["X-Basket-Id"] = basketId;
+  }
+
   const res = await fetch(`${BASE_URL}/clear`, {
-    ...defaultOptions,
     method: "POST",
+    headers,
+    credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Failed to clear basket");
+  console.log("clearBasket: Response status:", res.status);
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Backend error response:", errorText);
+    throw new Error("Failed to clear basket");
+  }
 }
 
 // POST /api/basket/checkout
 export async function checkout(): Promise<string> {
+  console.log("checkout: Making request to", `${BASE_URL}/checkout`);
+  const basketId = getBasketId();
+  console.log("checkout: Basket ID from localStorage:", basketId);
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (basketId) {
+    headers["X-Basket-Id"] = basketId;
+  }
+
   const res = await fetch(`${BASE_URL}/checkout`, {
-    ...defaultOptions,
     method: "POST",
+    headers,
+    credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Checkout failed");
+  console.log("checkout: Response status:", res.status);
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error("Backend error response:", errorText);
+    throw new Error("Checkout failed");
+  }
+
   return await res.text();
 }

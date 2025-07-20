@@ -17,11 +17,14 @@ export default function BasketItem({ item }: { item: Item }) {
 
   const handleRemove = async () => {
     try {
+      console.log("Removing item with productId:", item.productId);
       await removeItemFromBasket(item.productId);
+      console.log("Item removed successfully, refreshing basket...");
       await refreshBasket();
     } catch (error) {
-      // Optionally handle error (e.g., show a toast)
       console.error("Failed to remove item:", error);
+      // You could add a toast notification here for better UX
+      alert("Failed to remove item from basket. Please try again.");
     }
   };
 
