@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Container, Paper, Grid } from "@mui/material";
+import { Box, Typography, Container, Paper } from "@mui/material";
 import { Email, Phone, LocationOn, AccessTime } from "@mui/icons-material";
 
 export default function ContactPage() {
@@ -7,39 +7,28 @@ export default function ContactPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+        backgroundImage: "url('/images/vineyard.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         position: "relative",
         overflow: "hidden",
         pt: 10, // Account for navbar
       }}
     >
-      {/* Background decorative elements */}
+      {/* Overlay for better text readability */}
       <Box
         sx={{
           position: "absolute",
-          top: "-50px",
-          right: "-50px",
-          width: "200px",
-          height: "200px",
-          background:
-            "radial-gradient(circle, rgba(106, 13, 173, 0.1) 0%, transparent 70%)",
-          borderRadius: "50%",
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: "-100px",
-          left: "-100px",
-          width: "300px",
-          height: "300px",
-          background:
-            "radial-gradient(circle, rgba(139, 0, 0, 0.1) 0%, transparent 70%)",
-          borderRadius: "50%",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
         }}
       />
 
-      <Container maxWidth="md" sx={{ py: 8 }}>
+      <Container maxWidth={false} sx={{ py: 8, px: { xs: 2, md: 4 } }}>
         <Box sx={{ textAlign: "center", mb: 6 }}>
           {/* Logo */}
           <Box sx={{ mb: 4 }}>
@@ -93,9 +82,15 @@ export default function ContactPage() {
             We'd love to hear from you
           </Typography>
 
-          <Grid container spacing={4}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 4,
+            }}
+          >
             {/* Contact Information */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: 1 }}>
               <Typography
                 variant="h6"
                 sx={{
@@ -173,10 +168,10 @@ export default function ContactPage() {
                   </Box>
                 </Box>
               </Box>
-            </Grid>
+            </Box>
 
             {/* Additional Information */}
-            <Grid item xs={12} md={6}>
+            <Box sx={{ flex: 1 }}>
               <Typography
                 variant="h6"
                 sx={{
@@ -219,8 +214,8 @@ export default function ContactPage() {
                 explore our curated collection, we welcome you to visit us
                 during our opening hours.
               </Typography>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Paper>
       </Container>
     </Box>

@@ -6,39 +6,28 @@ export default function AboutPage() {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)",
+        backgroundImage: "url('/images/vineyard.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
         position: "relative",
         overflow: "hidden",
         pt: 10, // Account for navbar
       }}
     >
-      {/* Background decorative elements */}
+      {/* Overlay for better text readability */}
       <Box
         sx={{
           position: "absolute",
-          top: "-50px",
-          right: "-50px",
-          width: "200px",
-          height: "200px",
-          background:
-            "radial-gradient(circle, rgba(106, 13, 173, 0.1) 0%, transparent 70%)",
-          borderRadius: "50%",
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          bottom: "-100px",
-          left: "-100px",
-          width: "300px",
-          height: "300px",
-          background:
-            "radial-gradient(circle, rgba(139, 0, 0, 0.1) 0%, transparent 70%)",
-          borderRadius: "50%",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
         }}
       />
 
-      <Container maxWidth="md" sx={{ py: 8 }}>
+      <Container maxWidth={false} sx={{ py: 8, px: { xs: 2, md: 4 } }}>
         <Box sx={{ textAlign: "center", mb: 6 }}>
           {/* Logo */}
           <Box sx={{ mb: 4 }}>
