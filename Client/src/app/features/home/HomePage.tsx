@@ -130,7 +130,7 @@ export default function HomePage() {
               <Button
                 variant="contained"
                 size="large"
-                onClick={() => navigate("/products")}
+                onClick={() => navigate("/catalog")}
                 sx={{
                   backgroundColor: "#8b0000",
                   "&:hover": {
