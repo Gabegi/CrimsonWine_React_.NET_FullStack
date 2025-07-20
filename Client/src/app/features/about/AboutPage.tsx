@@ -46,7 +46,7 @@ export default function AboutPage() {
               fontFamily: "'Playfair Display', serif",
               fontWeight: 700,
               fontSize: { xs: "2.5rem", md: "3.5rem" },
-              color: "#2c1810",
+              color: "#ffffff",
               mb: 3,
               lineHeight: 1.2,
             }}
