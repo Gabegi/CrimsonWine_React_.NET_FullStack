@@ -49,6 +49,10 @@ export default function Navbar() {
             src="/images/crimson-wines-logo.svg"
             alt="Crimson Wines Logo"
             style={{ width: "40px", height: "40px" }}
+            onError={(e) => {
+              console.error("Failed to load logo:", e);
+              e.currentTarget.style.display = "none";
+            }}
           />
           <Typography
             component={NavLink}

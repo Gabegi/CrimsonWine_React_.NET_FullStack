@@ -35,6 +35,10 @@ export default function AboutPage() {
               src="/images/crimson-wines-logo.svg"
               alt="Crimson Wines Logo"
               style={{ width: "120px", height: "120px" }}
+              onError={(e) => {
+                console.error("Failed to load logo:", e);
+                e.currentTarget.style.display = "none";
+              }}
             />
           </Box>
 
