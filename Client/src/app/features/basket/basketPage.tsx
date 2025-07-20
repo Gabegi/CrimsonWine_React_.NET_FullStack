@@ -7,11 +7,12 @@ import {
   CardContent,
   Stack,
 } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+
 import BasketItem from "./basketItem";
 import OrderSummary from "./orderSummary";
 import { useBasket } from "./BasketContext";
 import { useEffect } from "react";
+import Illustration from "../../components/Illustrations";
 
 export default function BasketPage() {
   const { basket, refreshBasket } = useBasket();
@@ -30,7 +31,7 @@ export default function BasketPage() {
         justifyContent="center"
         minHeight="60vh"
       >
-        <ShoppingCartIcon sx={{ fontSize: 80, color: "grey.400", mb: 2 }} />
+        <Illustration type="empty-basket" width={200} height={200} />
         <Typography variant="h4" color="text.secondary" gutterBottom>
           Your basket is empty
         </Typography>
