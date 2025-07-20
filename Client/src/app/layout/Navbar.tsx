@@ -41,28 +41,36 @@ export default function Navbar() {
       }}
     >
       <Toolbar>
-        {/* Website title with flexGrow */}
-        <Typography
-          component={NavLink}
-          to="/"
-          variant="h6"
-          sx={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontStyle: "italic",
-            fontWeight: 500,
-            letterSpacing: 1.5,
-            fontSize: "2rem",
-            color: "white",
-            transition: "color 0.3s ease",
-            "&:hover": {
-              color: "black",
-            },
-            flexGrow: 1,
-            textDecoration: "none",
-          }}
+        {/* Logo and Website title */}
+        <Box
+          sx={{ display: "flex", alignItems: "center", gap: 2, flexGrow: 1 }}
         >
-          Crimson Wines
-        </Typography>
+          <img
+            src="/images/crimson-wines-logo.svg"
+            alt="Crimson Wines Logo"
+            style={{ width: "40px", height: "40px" }}
+          />
+          <Typography
+            component={NavLink}
+            to="/"
+            variant="h6"
+            sx={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontStyle: "italic",
+              fontWeight: 500,
+              letterSpacing: 1.5,
+              fontSize: "2rem",
+              color: "white",
+              transition: "color 0.3s ease",
+              "&:hover": {
+                color: "black",
+              },
+              textDecoration: "none",
+            }}
+          >
+            Crimson Wines
+          </Typography>
+        </Box>
 
         {/* Middle and right links container */}
         <Box
