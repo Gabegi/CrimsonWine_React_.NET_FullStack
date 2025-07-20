@@ -9,12 +9,15 @@ export default function HomePage() {
     <Box
       sx={{
         minHeight: "100vh",
+        width: "100vw",
         backgroundImage: "url('/images/vineyard.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         position: "relative",
         overflow: "hidden",
+        margin: 0,
+        padding: 0,
       }}
     >
       {/* Overlay for better text readability */}
