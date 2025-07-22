@@ -42,3 +42,63 @@ Make sure you have the following installed:
    ```bash
    cd server
    ```
+   Restore dependencies:
+
+bash
+Copy
+Edit
+dotnet restore
+Update the database (EF Core Migrations):
+
+bash
+Copy
+Edit
+dotnet ef database update
+Run the API:
+
+bash
+Copy
+Edit
+dotnet run
+🖼️ Frontend Setup (React + Vite + MUI)
+Navigate to the frontend folder:
+
+bash
+Copy
+Edit
+cd client
+Install dependencies:
+
+bash
+Copy
+Edit
+npm install
+Start the dev server:
+
+bash
+Copy
+Edit
+npm run dev
+The app will be available at http://localhost:5173 (or whichever port Vite selects).
+
+🔄 API Overview
+The backend exposes standard RESTful endpoints. Example:
+
+bash
+Copy
+Edit
+GET /api/items
+POST /api/items
+PUT /api/items/{id}
+DELETE /api/items/{id}
+🎨 UI with Material UI
+This project uses Material UI for a clean, responsive, and accessible user interface.
+
+📂 Project Structure
+bash
+Copy
+Edit
+/client -> React frontend (Vite)
+/server -> .NET backend API
+/server/Models -> EF Core Models
+/server/Data -> DB Context & Seeders
