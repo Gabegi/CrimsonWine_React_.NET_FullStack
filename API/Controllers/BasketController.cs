@@ -1,4 +1,4 @@
-﻿using API.Controllers.DTOs;
+using API.Controllers.DTOs;
 using API.Data;
 using API.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +11,7 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class BasketController : ControllerBase
     {
+         // direct insert for demo
         private readonly AppDbContext _dbContext;
         private readonly ILogger<BasketController> _logger;
 
