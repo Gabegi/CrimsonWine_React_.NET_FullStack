@@ -3,7 +3,7 @@
 A modern fullstack web application built using:
 
 - **Frontend:** React (Vite, MUI)
-- **Backend:** ASP.NET Core Web API
+- **Backend:** ASP.NET Core Web API (Controllers)
 - **Database:** Entity Framework Core (EF Core)
 
 ## 🧱 Tech Stack
